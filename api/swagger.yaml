@@ -175,21 +175,12 @@ paths:
       - "Course"
       summary: "Gets all courses"
       description: ""
-      operationId: "addPet"
+      operationId: "getCourses"
       consumes:
       - "application/json"
       produces:
       - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Course"
       responses:
-        "405":
-          description: "Invalid input"
         "200":
           description: "A list of all cources"
           schema:
@@ -207,7 +198,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Pet object that needs to be added to the store"
+        description: "Representation of a course object to be created"
         required: true
         schema:
           $ref: "#/definitions/Course"
@@ -218,12 +209,12 @@ paths:
             type: "integer"
             format: "int64"
             description: "Returns Id of created course"
-  /Course/{courseId}/addStudents:  
+  /Course/{courseId}/addStudent:  
     put:
       tags:
       - "Course"
       summary: "Add students to a specific course"
-      description: ""
+      description: "Adds students to the course. If the student is already added then it wont be added as a duplicate."
       operationId: "addStudentsToCourse"
       consumes:
       - "application/json"
@@ -241,12 +232,14 @@ paths:
         description: "Identifiers of students to be added to the course"
         required: true
         schema:
-          $ref: "#/definitions/ArrayOfIds"
+          type: "object"
+          properties:
+            studentId:
+              type: "integer"
+              format: "int64"
       responses:
         "200":
-          description: "Ok"
-          schema: 
-            $ref: "#/definitions/Course"
+          description: "The student is added to the course"
   /Course/{courseId}/student/{studentId}:
     delete:
       tags:

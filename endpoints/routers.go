@@ -63,16 +63,9 @@ var routes = Routes{
 	},
 
 	Route{
-		"AddPet",
-		strings.ToUpper("Get"),
-		"/v1/Course",
-		AddPet,
-	},
-
-	Route{
 		"AddStudentsToCourse",
 		strings.ToUpper("Put"),
-		"/v1/Course/{courseId}/addStudents",
+		"/v1/Course/{courseId}/addStudent",
 		AddStudentsToCourse,
 	},
 
@@ -81,6 +74,13 @@ var routes = Routes{
 		strings.ToUpper("Delete"),
 		"/v1/Course/{courseId}",
 		DeleteCourse,
+	},
+
+	Route{
+		"GetCourses",
+		strings.ToUpper("Get"),
+		"/v1/Course",
+		GetCourses,
 	},
 
 	Route{
