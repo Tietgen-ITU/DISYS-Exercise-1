@@ -9,7 +9,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/ArneProductions/DISYS-exercise-1/endpoints"
 	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
@@ -58,8 +57,6 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 	v1 := router.Group("/v1")
 	{
-		v1.GET("/", Index)
-
 		users := v1.Group("users")
 		{
 			users.POST("/", userController.CreateUser)
@@ -96,8 +93,4 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 			workloads.POST("/", workloadController.AddWorkload)
 		}
 	}
-}
-
-func Index(c *gin.Context) {
-	fmt.Fprintf(c.Writer, "Hello World!")
 }
