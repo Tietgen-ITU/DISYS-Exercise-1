@@ -11,14 +11,17 @@ package main
 import (
 	"fmt"
 	"github.com/ArneProductions/DISYS-exercise-1/endpoints"
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
-func SetupRouter() {
+func SetupRouter(db *gorm.DB) {
 	router := gin.Default()
 
-	setupRoutes(router)
+	setupRoutes(router, db)
 
 	err := router.Run()
 	if err != nil {
@@ -44,8 +47,11 @@ func convertToUInt(name string) gin.HandlerFunc {
 	}
 }
 
-func setupRoutes(router *gin.Engine) {
-	userController := endpoints.NewUserController()
+func setupRoutes(router *gin.Engine, db *gorm.DB) {
+	userRepository := repository.NewSqliteUserRepository(db)
+
+	userController := endpoints.NewUserController(userRepository)
+
 	courseController := endpoints.NewCourseController()
 	satisfactionController := endpoints.NewSatisfactionController()
 	workloadController := endpoints.NewWorkloadController()
