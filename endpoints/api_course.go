@@ -11,29 +11,41 @@ package endpoints
 
 import (
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func AddCourse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type CourseController interface {
+	AddCourse(*gin.Context)
+	AddStudentsToCourse(*gin.Context)
+	DeleteCourse(*gin.Context)
+	GetCourses(*gin.Context)
+	RemoveStudentFromCourse(*gin.Context)
 }
 
-func AddStudentsToCourse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type courseController struct {
 }
 
-func DeleteCourse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func NewCourseController() CourseController {
+	return courseController{}
 }
 
-func GetCourses(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func (c courseController) AddCourse(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
 
-func RemoveStudentFromCourse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (c courseController) DeleteCourse(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (c courseController) GetCourses(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (c courseController) RemoveStudentFromCourse(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
