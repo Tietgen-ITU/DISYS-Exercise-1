@@ -26,6 +26,24 @@ func SetupRouter() {
 	}
 }
 
+func convertToUInt(name string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		val := ctx.Params.ByName(name)
+
+		if val == "" {
+			return
+		}
+
+		conv, err := strconv.ParseUint(val, 10, 64)
+		if err != nil {
+			ctx.Error(err)
+		}
+
+		ctx.Set(name+"_int", conv)
+		ctx.Next()
+	}
+}
+
 func setupRoutes(router *gin.Engine) {
 	userController := endpoints.NewUserController()
 	courseController := endpoints.NewCourseController()
@@ -39,9 +57,15 @@ func setupRoutes(router *gin.Engine) {
 		users := v1.Group("users")
 		{
 			users.POST("/", userController.CreateUser)
-			users.DELETE("/", userController.DeleteUser)
-			users.PUT("/", userController.UpdateUser)
-			users.GET("/:user", userController.GetUser)
+			users.GET("/", userController.GetUsers)
+
+			usersWithId := users.Group(":userId")
+			{
+				usersWithId.Use(convertToUInt("userId"))
+				usersWithId.PUT("/", userController.UpdateUser)
+				usersWithId.GET("/", userController.GetUser)
+				usersWithId.DELETE("/", userController.DeleteUser)
+			}
 		}
 
 		courses := v1.Group("courses")
