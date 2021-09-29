@@ -32,7 +32,6 @@ func NewSqliteUserRepository(db *gorm.DB) UserRepository {
 	return repo
 }
 
-// FIXME: This is fucking magic, how the hell??????
 func (s sqliteUserRepository) GetAll() (users []models.User, err error) {
 	log.Println("{SQLITE USER REPOSITORY} GetAll")
 
