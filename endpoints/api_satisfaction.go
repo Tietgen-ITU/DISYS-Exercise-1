@@ -11,19 +11,31 @@ package endpoints
 
 import (
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func SatisfactionCourseCourseGet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type SatisfactionController interface {
+	GetCourseSatisfaction(ctx *gin.Context)
+	AddSatisfaction(ctx *gin.Context)
+	GetStudentSatisfaction(ctx *gin.Context)
 }
 
-func SatisfactionPost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type satisfactionController struct {
 }
 
-func SatisfactionStudentStudentGet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func NewSatisfactionController() SatisfactionController {
+	return satisfactionController{}
+}
+
+func (s satisfactionController) GetCourseSatisfaction(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (s satisfactionController) AddSatisfaction(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (s satisfactionController) GetStudentSatisfaction(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }

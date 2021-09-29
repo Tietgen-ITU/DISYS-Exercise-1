@@ -10,15 +10,26 @@
 package endpoints
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func WorkloadCourseStudentGet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type WorkloadController interface {
+	GetStudentWorkloadFromCourse(*gin.Context)
+	AddWorkload(*gin.Context)
 }
 
-func WorkloadPost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+type workloadController struct {
+}
+
+func NewWorkloadController() WorkloadController {
+	return workloadController{}
+}
+
+func (w workloadController) GetStudentWorkloadFromCourse(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+}
+
+func (w workloadController) AddWorkload(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
