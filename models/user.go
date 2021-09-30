@@ -9,14 +9,18 @@
 
 package models
 
+import (
+	"gorm.io/gorm"
+	"time"
+)
+
 type User struct {
-	Id int64 `json:"id,omitempty"`
-
-	Name string `json:"name"`
-
-	Mail string `json:"mail"`
-
-	Popularity int64 `json:"popularity,omitempty"`
-
-	Role string `json:"role"`
+	ID         uint64         `json:"id,omitempty" gorm:"primaryKey;autoIncrement"`
+	Name       string         `json:"name"`
+	Mail       string         `json:"mail"`
+	Popularity int64          `json:"popularity,omitempty"`
+	Role       string         `json:"role"`
+	CreatedAt  time.Time      `json:"created_at,omitempty"`
+	UpdatedAt  time.Time      `json:"updated_at,omitempty"`
+	DeletedAt  gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
 }

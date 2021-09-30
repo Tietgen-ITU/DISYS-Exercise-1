@@ -9,16 +9,18 @@
 package main
 
 import (
-	"fmt"
 	"github.com/ArneProductions/DISYS-exercise-1/endpoints"
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
-func SetupRouter() {
+func SetupRouter(db *gorm.DB) {
 	router := gin.Default()
 
-	setupRoutes(router)
+	setupRoutes(router, db)
 
 	err := router.Run()
 	if err != nil {
@@ -26,22 +28,47 @@ func SetupRouter() {
 	}
 }
 
-func setupRoutes(router *gin.Engine) {
-	userController := endpoints.NewUserController()
+func convertToUInt(name string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		val := ctx.Params.ByName(name)
+
+		if val == "" {
+			return
+		}
+
+		conv, err := strconv.ParseUint(val, 10, 64)
+		if err != nil {
+			ctx.Error(err)
+		}
+
+		ctx.Set(name+"_int", conv)
+		ctx.Next()
+	}
+}
+
+func setupRoutes(router *gin.Engine, db *gorm.DB) {
+	userRepository := repository.NewSqliteUserRepository(db)
+
+	userController := endpoints.NewUserController(userRepository)
+
 	courseController := endpoints.NewCourseController()
 	satisfactionController := endpoints.NewSatisfactionController()
 	workloadController := endpoints.NewWorkloadController()
 
 	v1 := router.Group("/v1")
 	{
-		v1.GET("/", Index)
-
 		users := v1.Group("users")
 		{
 			users.POST("/", userController.CreateUser)
-			users.DELETE("/", userController.DeleteUser)
-			users.PUT("/", userController.UpdateUser)
-			users.GET("/:user", userController.GetUser)
+			users.GET("/", userController.GetUsers)
+
+			usersWithId := users.Group(":userId")
+			{
+				usersWithId.Use(convertToUInt("userId"))
+				usersWithId.PUT("/", userController.UpdateUser)
+				usersWithId.GET("/", userController.GetUser)
+				usersWithId.DELETE("/", userController.DeleteUser)
+			}
 		}
 
 		courses := v1.Group("courses")
@@ -66,8 +93,4 @@ func setupRoutes(router *gin.Engine) {
 			workloads.POST("/", workloadController.AddWorkload)
 		}
 	}
-}
-
-func Index(c *gin.Context) {
-	fmt.Fprintf(c.Writer, "Hello World!")
 }

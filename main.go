@@ -10,11 +10,14 @@
 package main
 
 import (
+	"github.com/ArneProductions/DISYS-exercise-1/models"
 	"log"
 )
 
 func main() {
 	log.Printf("Server started")
 
-	SetupRouter()
+	db, _ := models.OpenDbConnection()
+
+	SetupRouter(db)
 }
