@@ -20,6 +20,7 @@ import (
 type WorkloadController interface {
 	GetStudentWorkloadFromCourse(*gin.Context)
 	AddWorkload(*gin.Context)
+	AddStudentWorkload(*gin.Context)
 }
 
 type workloadController struct {

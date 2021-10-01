@@ -95,6 +95,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 		{
 			workloads.GET("/:courseId/:studentId", workloadController.GetStudentWorkloadFromCourse)
 			workloads.POST("/", workloadController.AddWorkload)
+			workloads.POST("/student", workloadController.AddStudentWorkload)
 		}
 	}
 }
