@@ -48,11 +48,12 @@ func convertToUInt(name string) gin.HandlerFunc {
 
 func setupRoutes(router *gin.Engine, db *gorm.DB) {
 	userRepository := repository.NewSqliteUserRepository(db)
+	satisfactionRepository := repository.NewSqliteSatisfactionRepository(db)
 
 	userController := endpoints.NewUserController(userRepository)
 
 	courseController := endpoints.NewCourseController()
-	satisfactionController := endpoints.NewSatisfactionController()
+	satisfactionController := endpoints.NewSatisfactionController(satisfactionRepository)
 	workloadController := endpoints.NewWorkloadController()
 
 	v1 := router.Group("/v1")

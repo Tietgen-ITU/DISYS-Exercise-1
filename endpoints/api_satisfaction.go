@@ -10,8 +10,11 @@
 package endpoints
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/ArneProductions/DISYS-exercise-1/models"
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,20 +25,86 @@ type SatisfactionController interface {
 }
 
 type satisfactionController struct {
+	satisfactionRepository repository.SatisfactionRepository
 }
 
-func NewSatisfactionController() SatisfactionController {
-	return satisfactionController{}
+func NewSatisfactionController(satisfactionRepository repository.SatisfactionRepository) SatisfactionController {
+	return satisfactionController{satisfactionRepository: satisfactionRepository}
 }
 
 func (s satisfactionController) GetCourseSatisfaction(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{SATISFACTION CONTROLLER} GetCourseSatisfaction")
+
+	courseId := ctx.MustGet("course_id").(uint64)
+
+	
+	courseSatisfaction, err := s.satisfactionRepository.GetCourseSatisfactionById(courseId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed retrieving course satisfaction",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Ok",
+		"data": courseSatisfaction,
+	})
 }
 
 func (s satisfactionController) AddSatisfaction(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{SATISFACTION CONTROLLER} AddSatisfaction")
+
+	var studentSatisfaction models.StudentSatisfaction
+
+	if err := ctx.ShouldBindJSON(&studentSatisfaction); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request data",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	studentSatisfaction, err := s.satisfactionRepository.Create(studentSatisfaction)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed saving user",
+			"error": err.Error(),
+		})
+		return
+	}
+
+	
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "User saved",
+		"data": studentSatisfaction,
+	})
 }
 
 func (s satisfactionController) GetStudentSatisfaction(ctx *gin.Context) {
+
+	log.Println("{SATISFACTION CONTROLLER} GetStudentSatisfaction")
+
+	studentId := ctx.MustGet("student_id").(uint64)
+
+	studentSatisfaction, err := s.satisfactionRepository.GetStudentSatisfactionById(studentId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed retrieving student satisfaction",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Ok",
+		"data": studentSatisfaction,
+	})
+
 	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
