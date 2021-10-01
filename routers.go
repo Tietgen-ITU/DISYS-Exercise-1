@@ -52,6 +52,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 	userRepository := repository.NewSqliteUserRepository(db)
 	courseRepository := repository.NewSqliteCourseRepository(db)
 
+	// Create controllers
 	userController := endpoints.NewUserController(userRepository)
 
 	courseController := endpoints.NewCourseController(courseRepository)
@@ -76,6 +77,9 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 		courses := v1.Group("courses")
 		{
+			courses.POST("/", courseController.AddCourse)
+			courses.GET("/", courseController.GetCourses)
+
 			coursesWithId := courses.Group(":courseId")
 			{
 				coursesWithId.Use(convertToUInt("courseId"))
@@ -88,9 +92,6 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 					coursesWithIdAndStudentId.POST("/", courseController.RemoveStudentFromCourse)
 				}
 			}
-
-			courses.POST("/", courseController.AddCourse)
-			courses.GET("/", courseController.GetCourses)
 		}
 
 		satisfactions := v1.Group("satisfaction")
