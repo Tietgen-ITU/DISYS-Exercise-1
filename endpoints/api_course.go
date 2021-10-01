@@ -10,8 +10,10 @@
 package endpoints
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/ArneProductions/DISYS-exercise-1/models"
 	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -33,21 +35,59 @@ func NewCourseController(repo repository.CourseRepository) CourseController {
 }
 
 func (c courseController) AddCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} AddCourse")
+	var course models.Course
+
+	if err := ctx.ShouldBindJSON(&course); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request. Could not fetch data from request body",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	if err := c.courseRepository.CreateCourse(&course); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed to create the course",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"courseId": course.Id,
+	})
 }
 
 func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} AddStudentToCourse")
+	courseId := ctx.MustGet("courseId")
+
+	ctx.JSON(http.StatusOK, courseId)
 }
 
 func (c courseController) DeleteCourse(ctx *gin.Context) {
+	log.Println("{COURSE CONTROLLER} DeleteCourse")
 	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
 
 func (c courseController) GetCourses(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} GetCourses")
+	courses, err := c.courseRepository.GetCourses()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed getting courses",
+			"error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, courses)
 }
 
 func (c courseController) RemoveStudentFromCourse(ctx *gin.Context) {
+	log.Println("{COURSE CONTROLLER} RemoveStudentFromCourse")
 	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }

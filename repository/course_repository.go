@@ -8,7 +8,7 @@ import (
 )
 
 type CourseRepository interface {
-	CreateCourse(course models.Course) error
+	CreateCourse(course *models.Course) error
 	DeleteCourse(courseId uint64) error
 	AddStudent(courseId uint64, studentId uint64) error
 	RemoveStudent(courseId uint64, studentId uint64) error
@@ -41,7 +41,7 @@ type sqliteCourseRepository struct {
 	Db *gorm.DB
 }
 
-func (c sqliteCourseRepository) CreateCourse(course models.Course) error {
+func (c sqliteCourseRepository) CreateCourse(course *models.Course) error {
 
 	return c.Db.Create(&course).Error
 }
