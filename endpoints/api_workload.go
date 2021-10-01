@@ -12,6 +12,9 @@ package endpoints
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"log"
+	"github.com/ArneProductions/DISYS-exercise-1/models"
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 )
 
 type WorkloadController interface {
@@ -20,16 +23,76 @@ type WorkloadController interface {
 }
 
 type workloadController struct {
+	workloadRepository repository.WorkloadRepository
+	studentWorkloadRepository repository.StudentWorkloadRepository
 }
 
-func NewWorkloadController() WorkloadController {
-	return workloadController{}
+func NewWorkloadController(workloadRepository repository.WorkloadRepository, studentWorkloadRepository repository.StudentWorkloadRepository) WorkloadController {
+	return workloadController{workloadRepository, studentWorkloadRepository}
 }
 
 func (w workloadController) GetStudentWorkloadFromCourse(ctx *gin.Context) {
+
+
 	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
 }
 
 func (w workloadController) AddWorkload(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{WORKLOAD CONTROLLER} Create")
+
+	var workload models.Workload
+
+	if err := ctx.ShouldBindJSON(&workload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request data",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	workload, err := w.workloadRepository.Create(workload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed saving user",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Ok",
+		"data": workload,
+	})
+}
+
+func (w workloadController) AddStudentWorkload(ctx *gin.Context) {
+	log.Println("{WORKLOAD CONTROLLER} Create")
+
+	var studentworkload models.StudentWorkload
+
+	if err := ctx.ShouldBindJSON(&studentworkload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request data",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	workload, err := w.studentWorkloadRepository.Create(studentworkload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed saving user",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Ok",
+		"data": workload,
+	})
 }

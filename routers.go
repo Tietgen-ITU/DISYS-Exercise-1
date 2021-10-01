@@ -51,9 +51,13 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 	userController := endpoints.NewUserController(userRepository)
 
+	workloadRepository := repository.NewSqliteWorkloadRepository(db)
+
+	studentWorkloadRepository := repository.NewSqliteStudentWorkloadRepository(db)
+
 	courseController := endpoints.NewCourseController()
 	satisfactionController := endpoints.NewSatisfactionController()
-	workloadController := endpoints.NewWorkloadController()
+	workloadController := endpoints.NewWorkloadController(workloadRepository, studentWorkloadRepository)
 
 	v1 := router.Group("/v1")
 	{
