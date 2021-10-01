@@ -42,25 +42,30 @@ type sqliteCourseRepository struct {
 }
 
 func (c sqliteCourseRepository) CreateCourse(course models.Course) error {
-	return nil
+
+	return c.Db.Create(&course).Error
 }
 
 func (c sqliteCourseRepository) DeleteCourse(courseId uint64) error {
-	return nil
+	return c.Db.Delete(&models.Course{Id: courseId}).Error
 }
 
 func (c sqliteCourseRepository) AddStudent(courseId uint64, studentId uint64) error {
-	return nil
+
+	return c.Db.Model(&models.Course{Id: courseId}).Association("Students").Append(models.User{ID: studentId})
 }
 
 func (c sqliteCourseRepository) RemoveStudent(courseId uint64, studentId uint64) error {
-	return nil
+	return c.Db.Model(&models.Course{Id: courseId}).Association("Students").Delete(models.User{ID: studentId})
 }
 
-func (c sqliteCourseRepository) GetCourses() ([]models.Course, error) {
-	return nil, nil
+func (c sqliteCourseRepository) GetCourses() (courses []models.Course, err error) {
+
+	err = c.Db.Find(&courses).Error
+	return courses, err
 }
 
-func (c sqliteCourseRepository) GetCourse(courseId uint64) (models.Course, error) {
-	return models.Course{}, nil
+func (c sqliteCourseRepository) GetCourse(courseId uint64) (course models.Course, err error) {
+	err = c.Db.First(course, models.Course{Id: courseId}).Error
+	return models.Course{}, err
 }

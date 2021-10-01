@@ -10,7 +10,7 @@
 package models
 
 type Course struct {
-	Id uint64 `json:"id,omitempty"`
+	Id uint64 `json:"id,omitempty" gorm:"primaryKey;autoIncrement"`
 
 	Name string `json:"name,omitempty"`
 
@@ -18,5 +18,5 @@ type Course struct {
 
 	Teacher uint64 `json:"teacher,omitempty"`
 
-	Students []uint64 `json:"students,omitempty"`
+	Students []User `json:"students,omitempty"`
 }
