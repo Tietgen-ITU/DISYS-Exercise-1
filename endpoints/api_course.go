@@ -12,6 +12,7 @@ package endpoints
 import (
 	"net/http"
 
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,10 +25,11 @@ type CourseController interface {
 }
 
 type courseController struct {
+	courseRepository repository.CourseRepository
 }
 
-func NewCourseController() CourseController {
-	return courseController{}
+func NewCourseController(repo repository.CourseRepository) CourseController {
+	return courseController{courseRepository: repo}
 }
 
 func (c courseController) AddCourse(ctx *gin.Context) {

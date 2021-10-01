@@ -9,11 +9,11 @@ import (
 
 type CourseRepository interface {
 	CreateCourse(course models.Course) error
-	DeleteCourse(courseId int) error
-	AddStudent(courseId int, studentId int) error
-	RemoveStudent(courseId int, studentId int) error
+	DeleteCourse(courseId uint64) error
+	AddStudent(courseId uint64, studentId uint64) error
+	RemoveStudent(courseId uint64, studentId uint64) error
 	GetCourses() ([]models.Course, error)
-	GetCourse(courseId int) (models.Course, error)
+	GetCourse(courseId uint64) (models.Course, error)
 }
 
 func migrate(db *gorm.DB) error {
@@ -45,15 +45,15 @@ func (c sqliteCourseRepository) CreateCourse(course models.Course) error {
 	return nil
 }
 
-func (c sqliteCourseRepository) DeleteCourse(courseId int) error {
+func (c sqliteCourseRepository) DeleteCourse(courseId uint64) error {
 	return nil
 }
 
-func (c sqliteCourseRepository) AddStudent(courseId int, studentId int) error {
+func (c sqliteCourseRepository) AddStudent(courseId uint64, studentId uint64) error {
 	return nil
 }
 
-func (c sqliteCourseRepository) RemoveStudent(courseId int, studentId int) error {
+func (c sqliteCourseRepository) RemoveStudent(courseId uint64, studentId uint64) error {
 	return nil
 }
 
@@ -61,6 +61,6 @@ func (c sqliteCourseRepository) GetCourses() ([]models.Course, error) {
 	return nil, nil
 }
 
-func (c sqliteCourseRepository) GetCourse(courseId int) (models.Course, error) {
+func (c sqliteCourseRepository) GetCourse(courseId uint64) (models.Course, error) {
 	return models.Course{}, nil
 }
