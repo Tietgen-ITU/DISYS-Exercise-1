@@ -31,6 +31,6 @@ jobs:
       working-directory: ./proto
       run: go build -v -o ./out/client ./client/main.go 
 
-      - name: Build proto server
+    - name: Build proto server
       working-directory: ./proto
       run: go build -v -o ./out/server ./server/main.go 
