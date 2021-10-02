@@ -64,11 +64,11 @@ func (c courseController) AddCourse(ctx *gin.Context) {
 func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} AddStudentToCourse")
 
-	var studentId uint64
+	var user models.User
 
-	courseId := ctx.MustGet("courseId").(uint64)
+	courseId := ctx.MustGet("courseId_int").(uint64)
 
-	if err := ctx.ShouldBindJSON(studentId); err != nil {
+	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"msg":   "Bad request. Could not fetch studentId from body",
 			"Error": err.Error(),
@@ -77,7 +77,7 @@ func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+	if err := c.courseRepository.AddStudent(courseId, user.ID); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"msg":   "Could not add student to course",
 			"Error": err.Error(),
@@ -90,7 +90,7 @@ func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
 func (c courseController) DeleteCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} DeleteCourse")
 
-	courseId := ctx.MustGet("courseId").(uint64)
+	courseId := ctx.MustGet("courseId_int").(uint64)
 
 	if err := c.courseRepository.DeleteCourse(courseId); err != nil {
 
@@ -122,10 +122,10 @@ func (c courseController) GetCourses(ctx *gin.Context) {
 func (c courseController) RemoveStudentFromCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} RemoveStudentFromCourse")
 
-	courseId := ctx.MustGet("courseId").(uint64)
-	studentId := ctx.MustGet("studentId").(uint64)
+	courseId := ctx.MustGet("courseId_int").(uint64)
+	studentId := ctx.MustGet("studentId_int").(uint64)
 
-	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+	if err := c.courseRepository.RemoveStudent(courseId, studentId); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"msg":   "Could not remove student from course",
 			"Error": err.Error(),

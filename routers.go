@@ -89,7 +89,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 				coursesWithIdAndStudentId := coursesWithId.Group("student/:studentId")
 				{
 					coursesWithIdAndStudentId.Use(convertToUInt("studentId"))
-					coursesWithIdAndStudentId.POST("/", courseController.RemoveStudentFromCourse)
+					coursesWithIdAndStudentId.DELETE("/", courseController.RemoveStudentFromCourse)
 				}
 			}
 		}

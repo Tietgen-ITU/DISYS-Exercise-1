@@ -52,7 +52,7 @@ func (c sqliteCourseRepository) DeleteCourse(courseId uint64) error {
 
 func (c sqliteCourseRepository) AddStudent(courseId uint64, studentId uint64) error {
 
-	return c.Db.Model(&models.Course{Id: courseId}).Association("Students").Append(models.User{ID: studentId})
+	return c.Db.Model(&models.Course{Id: courseId}).Association("Students").Append(&models.User{ID: studentId})
 }
 
 func (c sqliteCourseRepository) RemoveStudent(courseId uint64, studentId uint64) error {
@@ -61,7 +61,7 @@ func (c sqliteCourseRepository) RemoveStudent(courseId uint64, studentId uint64)
 
 func (c sqliteCourseRepository) GetCourses() (courses []models.Course, err error) {
 
-	err = c.Db.Find(&courses).Error
+	err = c.Db.Preload("Students").Find(&courses).Error
 	return courses, err
 }
 
