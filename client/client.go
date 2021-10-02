@@ -201,7 +201,46 @@ func addStudentToCourse() {
 	}
 }
 
-func removeStudentFromCourse() {}
+func removeStudentFromCourse() {
+	var course int
+	var student int
+
+	fmt.Print("Provide a course to remove a student from: ")
+	_, err := fmt.Scanf("%d\n", &course)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Print("Provide a student to remove: ")
+	_, err = fmt.Scanf("%d\n", &student)
+	if err != nil {
+		handleError(err)
+	}
+
+	req, err := http.NewRequest(
+		"DELETE",
+		getHost()+strconv.Itoa(course)+"/student/"+strconv.Itoa(student),
+		nil,
+	)
+	if err != nil {
+		handleError(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		handleError(err)
+	}
+
+	var res map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&res)
+
+	if resp.StatusCode != 200 {
+		printResponse(resp.StatusCode, res)
+	} else {
+		fmt.Println(res["msg"])
+	}
+}
 
 func handleError(err error) {
 	fmt.Println("An error occurred, see below for details:")
