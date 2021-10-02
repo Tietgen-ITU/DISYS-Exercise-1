@@ -17,10 +17,11 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+        
+    - run: cd ./monolith
 
     - name: Build
-      run: cd ./monolith
-      run: go build -v -o ./monolith/out/ .
+      run: go build -v -o ./out/ ./...
 
     - name: Build client
-      run: go build -v -o ./monolith/out/client ./client/client.go
+      run: go build -v -o ./out/client ./client/client.go
