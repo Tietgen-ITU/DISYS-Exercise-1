@@ -75,7 +75,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 			}
 		}
 
-		courses := v1.Group("courses")
+		courses := v1.Group("course")
 		{
 			courses.POST("/", courseController.AddCourse)
 			courses.GET("/", courseController.GetCourses)
