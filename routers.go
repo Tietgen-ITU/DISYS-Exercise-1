@@ -50,17 +50,17 @@ func convertToUInt(name string) gin.HandlerFunc {
 func setupRoutes(router *gin.Engine, db *gorm.DB) {
 	// Define repositories
 	userRepository := repository.NewSqliteUserRepository(db)
+	satisfactionRepository := repository.NewSqliteSatisfactionRepository(db)
 	courseRepository := repository.NewSqliteCourseRepository(db)
 
 	// Create controllers
 	userController := endpoints.NewUserController(userRepository)
 
+	satisfactionController := endpoints.NewSatisfactionController(satisfactionRepository)
+	courseController := endpoints.NewCourseController(courseRepository)
 	workloadRepository := repository.NewSqliteWorkloadRepository(db)
 
 	studentWorkloadRepository := repository.NewSqliteStudentWorkloadRepository(db)
-
-	courseController := endpoints.NewCourseController(courseRepository)
-	satisfactionController := endpoints.NewSatisfactionController()
 	workloadController := endpoints.NewWorkloadController(workloadRepository, studentWorkloadRepository)
 
 	v1 := router.Group("/v1")
@@ -100,6 +100,8 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 		satisfactions := v1.Group("satisfaction")
 		{
+			satisfactions.Use(convertToUInt("courseId"))
+			satisfactions.Use(convertToUInt("studentId"))
 			satisfactions.GET("/course/:courseId", satisfactionController.GetCourseSatisfaction)
 			satisfactions.POST("/", satisfactionController.AddSatisfaction)
 			satisfactions.GET("/student/:studentId", satisfactionController.GetStudentSatisfaction)

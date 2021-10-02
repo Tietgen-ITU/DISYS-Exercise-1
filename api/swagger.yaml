@@ -162,7 +162,8 @@ paths:
         "200":
           description: "Success"
           schema:
-            $ref: "#/definitions/StudentWorkload"
+            $ref: "#/definitions/CourseSatisfaction"  
+            
   /satisfaction/student/{student}:
     get:
       tags:
@@ -179,8 +180,8 @@ paths:
         "200":
           description: "Success"
           schema:
-            $ref: "#/definitions/StudentWorkload"
-  /course:
+            $ref: "#/definitions/StudentSatisfaction"
+  /Course:
     get:
       tags:
       - "Course"
@@ -357,10 +358,14 @@ definitions:
       completion:
         type: "integer"
         format: "int64"
-    example:
-      completion: 1
-      student_id: 6
-      workload_id: 0
+  CourseSatisfaction:
+    properties:
+      course_id:
+        type: "integer"
+        format: "int64"
+      satisfaction:
+        type: "integer"
+        format: "int64"
   StudentSatisfaction:
     properties:
       course_id:
