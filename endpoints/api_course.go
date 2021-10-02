@@ -63,14 +63,46 @@ func (c courseController) AddCourse(ctx *gin.Context) {
 
 func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} AddStudentToCourse")
-	courseId := ctx.MustGet("courseId")
 
-	ctx.JSON(http.StatusOK, courseId)
+	var studentId uint64
+
+	courseId := ctx.MustGet("courseId").(uint64)
+
+	if err := ctx.ShouldBindJSON(studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request. Could not fetch studentId from body",
+			"Error": err.Error(),
+		})
+
+		return
+	}
+
+	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Could not add student to course",
+			"Error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Student added to course"})
 }
 
 func (c courseController) DeleteCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} DeleteCourse")
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+
+	courseId := ctx.MustGet("courseId").(uint64)
+
+	if err := c.courseRepository.DeleteCourse(courseId); err != nil {
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Could not delete course",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Course Deleted"})
 }
 
 func (c courseController) GetCourses(ctx *gin.Context) {
@@ -89,5 +121,16 @@ func (c courseController) GetCourses(ctx *gin.Context) {
 
 func (c courseController) RemoveStudentFromCourse(ctx *gin.Context) {
 	log.Println("{COURSE CONTROLLER} RemoveStudentFromCourse")
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+
+	courseId := ctx.MustGet("courseId").(uint64)
+	studentId := ctx.MustGet("studentId").(uint64)
+
+	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Could not remove student from course",
+			"Error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Student removed from course"})
 }
