@@ -17,9 +17,12 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+    
+    - name: Move to monolith subdirectory
+      run: cd ./monolith
 
     - name: Build
-      run: go build -v -o ./monolith/out/ ./monolith
+      run: go build -v -o ./monolith/out/ .
 
     - name: Build client
-      run: go build -v -o ./monolith/out/client ./monolith/client/client.go
+      run: go build -v -o ./monolith/out/client ./client/client.go
