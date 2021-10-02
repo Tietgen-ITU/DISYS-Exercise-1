@@ -58,7 +58,10 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 	satisfactionController := endpoints.NewSatisfactionController(satisfactionRepository)
 	courseController := endpoints.NewCourseController(courseRepository)
-	workloadController := endpoints.NewWorkloadController()
+	workloadRepository := repository.NewSqliteWorkloadRepository(db)
+
+	studentWorkloadRepository := repository.NewSqliteStudentWorkloadRepository(db)
+	workloadController := endpoints.NewWorkloadController(workloadRepository, studentWorkloadRepository)
 
 	v1 := router.Group("/v1")
 	{
@@ -80,6 +83,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 		{
 			courses.POST("/", courseController.AddCourse)
 			courses.GET("/", courseController.GetCourses)
+			courses.DELETE("/:courseId/student/:studentId", courseController.RemoveStudentFromCourse)
 
 			coursesWithId := courses.Group(":courseId")
 			{
@@ -106,8 +110,11 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 		workloads := v1.Group("workload")
 		{
+			workloads.Use(convertToUInt("courseId"))
+			workloads.Use(convertToUInt("studentId"))
 			workloads.GET("/:courseId/:studentId", workloadController.GetStudentWorkloadFromCourse)
 			workloads.POST("/", workloadController.AddWorkload)
+			workloads.POST("/student", workloadController.AddStudentWorkload)
 		}
 	}
 }
