@@ -81,7 +81,7 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 			courses.PUT("/:courseId/addStudent", courseController.AddStudentsToCourse)
 			courses.DELETE("/:courseId", courseController.DeleteCourse)
 			courses.GET("/", courseController.GetCourses)
-			courses.POST("/:courseId/student/:studentId", courseController.RemoveStudentFromCourse)
+			courses.DELETE("/:courseId/student/:studentId", courseController.RemoveStudentFromCourse)
 		}
 
 		satisfactions := v1.Group("satisfaction")
