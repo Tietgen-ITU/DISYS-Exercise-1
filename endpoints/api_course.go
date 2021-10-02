@@ -10,8 +10,11 @@
 package endpoints
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/ArneProductions/DISYS-exercise-1/models"
+	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,28 +27,110 @@ type CourseController interface {
 }
 
 type courseController struct {
+	courseRepository repository.CourseRepository
 }
 
-func NewCourseController() CourseController {
-	return courseController{}
+func NewCourseController(repo repository.CourseRepository) CourseController {
+	return courseController{courseRepository: repo}
 }
 
 func (c courseController) AddCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} AddCourse")
+	var course models.Course
+
+	if err := ctx.ShouldBindJSON(&course); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request. Could not fetch data from request body",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	if err := c.courseRepository.CreateCourse(&course); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed to create the course",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"courseId": course.Id,
+	})
 }
 
 func (c courseController) AddStudentsToCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} AddStudentToCourse")
+
+	var studentId uint64
+
+	courseId := ctx.MustGet("courseId").(uint64)
+
+	if err := ctx.ShouldBindJSON(studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Bad request. Could not fetch studentId from body",
+			"Error": err.Error(),
+		})
+
+		return
+	}
+
+	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Could not add student to course",
+			"Error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Student added to course"})
 }
 
 func (c courseController) DeleteCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} DeleteCourse")
+
+	courseId := ctx.MustGet("courseId").(uint64)
+
+	if err := c.courseRepository.DeleteCourse(courseId); err != nil {
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Could not delete course",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Course Deleted"})
 }
 
 func (c courseController) GetCourses(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} GetCourses")
+	courses, err := c.courseRepository.GetCourses()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed getting courses",
+			"error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, courses)
 }
 
 func (c courseController) RemoveStudentFromCourse(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	log.Println("{COURSE CONTROLLER} RemoveStudentFromCourse")
+
+	courseId := ctx.MustGet("courseId").(uint64)
+	studentId := ctx.MustGet("studentId").(uint64)
+
+	if err := c.courseRepository.AddStudent(courseId, studentId); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":   "Could not remove student from course",
+			"Error": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Student removed from course"})
 }
