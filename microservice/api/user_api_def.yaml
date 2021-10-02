@@ -1,0 +1,193 @@
+swagger: '2.0'
+info:
+  version: '1'
+  title: User
+  description: Users
+host: 'localhost:8080'
+basePath: /v1
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+    /users:
+        get:
+            tags:
+            - "user"
+            summary: "Get list of users"
+            produces:
+            - "application/json"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        type: "object"
+                        properties:
+                            msg:
+                                type: "string"
+                                description: "Description of the operations success"
+                            data:
+                                $ref: "#/definitions/UserArray"
+        post:
+            tags:
+            - "user"
+            summary: "Create user"
+            description: "This can only be done by the logged in user."
+            operationId: "createUser"
+            produces:
+            - "application/json"
+            parameters:
+            - in: "body"
+              name: "body"
+              description: "Created user object"
+              required: true
+              schema:
+                $ref: "#/definitions/CreateUser"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        type: "object"
+                        properties:
+                            msg:
+                                type: "string"
+                                description: "Description of the operations success"
+                            data:
+                                $ref: "#/definitions/ReturnUser"
+    /users/{userId}:
+        get:
+            tags:
+            - "user"
+            description: 'Returns details about a specific user'
+            produces:
+                - application/json
+            parameters:
+                - in: path
+                  name: userId
+                  type: integer
+                  required: true
+                  description: Details of the given user
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        type: "object"
+                        properties:
+                            msg:
+                                type: "string"
+                                description: "Description of the operations success"
+                            data:
+                                $ref: "#/definitions/ReturnUser"
+        put:
+            tags:
+            - "user"
+            summary: "Updated user"
+            description: "This can only be done by the logged in user."
+            operationId: "updateUser"
+            produces:
+                - "application/json"
+            parameters:
+                - name: "userId"
+                  in: "path"
+                  description: "user that need to be updated"
+                  required: true
+                  type: "string"
+                - in: "body"
+                  name: "body"
+                  description: "Updated user object"
+                  required: true
+                  schema:
+                    $ref: "#/definitions/CreateUser"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        type: "object"
+                        properties:
+                            msg:
+                                type: "string"
+                                description: "Description of the operations success"
+                            data:
+                                $ref: "#/definitions/ReturnUser"
+                "400":
+                    description: "Invalid user supplied"
+                "404":
+                    description: "User not found"
+        delete:
+            tags:
+            - "user"
+            summary: "Deleted user"
+            description: "This can only be done by the logged in user."
+            produces:
+            - "application/json"
+            parameters:
+                - name: "userId"
+                  in: "path"
+                  description: "user that need to be deleted"
+                  required: true
+                  type: "string"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        type: "object"
+                        properties:
+                            msg:
+                                type: "string"
+                                description: "Description of the operations success"
+                "400":
+                    description: "Invalid user supplied"
+                "404":
+                    description: "User not found"
+definitions:
+    CreateUser:
+        type: "object"
+        required:
+        - "mail"
+        - "name"
+        - "role"
+        properties:
+            name:
+                type: "string"
+                example: "Karl"
+            mail:
+                type: "string"
+                example: "karl@itu.dk"
+            popularity:
+                type: "integer"
+                format: "int64"
+            role:
+                type: "string"
+                enum:
+                - "teacher"
+                - "student"
+        example:
+            role: "teacher"
+            mail: "karl@itu.dk"
+            popularity: 6
+            name: "Karl"
+    ReturnUser:
+        allOf:
+          - $ref: '#/definitions/CreateUser'
+          - type: "object"
+          - properties:
+                id:
+                    type: "integer"
+                created_at:
+                    type: "string"
+                updated_at:
+                    type: "string"
+                deleted_at:
+                    type: "string"
+    UserArray:
+        type: "array"
+        items:
+            $ref: '#/definitions/ReturnUser'
+securityDefinitions:
+  BasicAuth:
+    type: basic
+security:
+  - BasicAuth: []

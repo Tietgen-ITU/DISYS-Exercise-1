@@ -1,0 +1,104 @@
+swagger: '2.0'
+info:
+  version: '1'
+  title: Workload
+  description: Enter description about your API here
+host: 'localhost:8080'
+basePath: /v1/workload
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+    /:
+        post:
+            tags:
+            - "workload"
+            summary: "Create workload"
+            parameters:
+            - in: "body"
+              name: "body"
+              required: true
+              schema:
+                $ref: "#/definitions/Workload"
+            x-exportParamName: "Body"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        $ref: "#/definitions/Workload"
+    /{workloadId}/student/{student}:
+        get:
+            tags:
+            - "workload"
+            summary: "Assign workload to student"
+            parameters:
+            - name: "workloadId"
+              in: "path"
+              description: "Id of the workload to assign to student"
+              required: true
+              type: "integer"
+              x-exportParamName: "Course"
+            - name: "student"
+              in: "path"
+              description: "Id of the student the workload is associated with"
+              required: true
+              type: "integer"
+            x-exportParamName: "Student"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        $ref: "#/definitions/StudentWorkload"
+    /{courseId}:
+        post:
+            tags:
+            - "workload"
+            summary: "Assign workload to student"
+            parameters:
+            - name: "courseId"
+              in: "path"
+              description: "Id of the workload to assign to student"
+              required: true
+              type: "integer"
+              x-exportParamName: "Course"
+            - name: "workload"
+              in: "body"
+              description: "Information of the workload to be assigned to the course"
+              required: true
+              schema: 
+                  $ref: "#/definitions/Workload"
+              x-exportParamName: "Workload"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        $ref: "#/definitions/StudentWorkload"
+
+definitions:
+    Workload:
+        properties:
+            workload_id:
+                type: integer
+                format: "int64"
+            course_id:
+                type: "integer"
+                format: "int64"
+            type:
+                type: "string"
+                enum:
+                - "Assignment"
+                - "Exercise"
+                - "Reading"
+    StudentWorkload:
+        properties:
+            workload:
+                $ref: "#/definitions/Workload"
+            student_id:
+                type: "integer"
+                format: "int64"
+            completion:
+                type: "integer"
+                format: "int64"
