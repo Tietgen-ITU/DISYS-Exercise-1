@@ -1,0 +1,83 @@
+swagger: '2.0'
+info:
+  version: '1'
+  title: Satisfaction
+  description: Enter description about your API here
+host: 'localhost:8080'
+basePath: /v1/satisfaction
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+    /course/{course}:
+        get:
+            tags:
+            - "Satisfaction"
+            summary: "Gets the average satisfaction for a specific course"
+            parameters:
+            - name: "course"
+              in: "path"
+              description: "Id of the course the satisfaction is associated with"
+              required: true
+              type: "integer"
+              x-exportParamName: "Course"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        $ref: "#/definitions/CourseSatisfaction"
+    /student/{student}:
+        get:
+            tags:
+            - "Satisfaction"
+            summary: "Get satisfaction for a student"
+            parameters:
+            - name: "student"
+              in: "path"
+              description: "Id of the student the satisfaction is associated with"
+              required: true
+              type: "integer"
+              x-exportParamName: "Student"
+            responses:
+                "200":
+                    description: "Success"
+                    schema:
+                        $ref: "#/definitions/StudentSatisfaction"
+    /:
+        post:
+            tags:
+            - "Satisfaction"
+            summary: "Submits a students satisfaction to a specific course"
+            parameters:
+            - name: "satisfaction"
+              in: "body"
+              schema:
+                  $ref: "#/definitions/StudentSatisfaction"
+            responses:
+                "200":
+                    description: "Returns ok"
+                
+
+definitions:
+    CourseSatisfaction:
+        properties:
+            course_id:
+                type: "integer"
+                format: "int64"
+            satisfaction:
+                type: "integer"
+                format: "int64"
+    StudentSatisfaction:
+        properties:
+            course_id:
+                type: "integer"
+                format: "int64"
+            student_id:
+                type: "integer"
+                format: "int64"
+            satisfaction:
+                type: "integer"
+                format: "int64"
