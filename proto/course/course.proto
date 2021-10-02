@@ -1,0 +1,38 @@
+syntax="proto3";
+option go_package = "github.com/ArneProductions/DISYS-exercise-1/proto/course";
+
+service CourseService {
+    rpc GetCourses (Empty) returns (CoursesResponse);
+    rpc AddCourse (Course) returns (CourseId);
+    rpc DeleteCourse (CourseId) returns (MessageResponse);
+    rpc AddStudentsToCourse (StudentCourseIdRequest) returns (MessageResponse);
+    rpc RemoveStudentsFromCourse (StudentCourseIdRequest) returns (MessageResponse);
+}
+
+message Empty {
+}
+
+message Course {
+    uint64 id = 1;
+    string name = 2;
+    string description = 3;
+    uint64 teacher = 4;
+    repeated uint64 students = 5;
+}
+
+message CourseId {
+    uint64 courseId = 1;
+}
+
+message CoursesResponse {
+    repeated Course courses = 1;
+}
+
+message StudentCourseIdRequest {
+    uint64 courseId = 1;
+    uint64 studentId = 2;
+}
+
+message MessageResponse {
+    string msg = 1;
+}
