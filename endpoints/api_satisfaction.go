@@ -35,9 +35,8 @@ func NewSatisfactionController(satisfactionRepository repository.SatisfactionRep
 func (s satisfactionController) GetCourseSatisfaction(ctx *gin.Context) {
 	log.Println("{SATISFACTION CONTROLLER} GetCourseSatisfaction")
 
-	courseId := ctx.MustGet("course_id").(uint64)
+	courseId := ctx.MustGet("courseId_int").(uint64)
 
-	
 	courseSatisfaction, err := s.satisfactionRepository.GetCourseSatisfactionById(courseId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -49,8 +48,8 @@ func (s satisfactionController) GetCourseSatisfaction(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "Ok",
-		"data": courseSatisfaction,
+		"course_id":     courseId,
+		"satisfaction": courseSatisfaction.Satisfaction,
 	})
 }
 
@@ -78,7 +77,6 @@ func (s satisfactionController) AddSatisfaction(ctx *gin.Context) {
 		return
 	}
 
-	
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "User saved",
 		"data": studentSatisfaction,
@@ -89,7 +87,7 @@ func (s satisfactionController) GetStudentSatisfaction(ctx *gin.Context) {
 
 	log.Println("{SATISFACTION CONTROLLER} GetStudentSatisfaction")
 
-	studentId := ctx.MustGet("student_id").(uint64)
+	studentId := ctx.MustGet("studentId_int").(uint64)
 
 	studentSatisfaction, err := s.satisfactionRepository.GetStudentSatisfactionById(studentId)
 	if err != nil {
@@ -102,7 +100,7 @@ func (s satisfactionController) GetStudentSatisfaction(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "Ok",
+		"msg":  "Ok",
 		"data": studentSatisfaction,
 	})
 

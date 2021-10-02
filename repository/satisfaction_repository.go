@@ -8,7 +8,7 @@ import (
 )
 
 type CourseSatisfaction struct {
-	satisfaction float32
+	AvgSatisfaction float32
 }
 
 
@@ -43,15 +43,15 @@ func NewSqliteSatisfactionRepository(db *gorm.DB) SatisfactionRepository {
 func (s sqliteSatisfactionRepository) GetCourseSatisfactionById(course_id uint64) (satisfaction models.StudentSatisfaction , err error) {
 	log.Println("{SQLITE Satisfaction REPOSITORY} GetCourseSatisfactionById")
 
-	err = s.Db.Select("AVG(satisfaction) as avgSatisfaction").Group("course_id").Where("course_id = (?)", course_id).Find(&satisfaction).Error
+	err = s.Db.Select("AVG(satisfaction) as Satisfaction").Group("course_id").Where("course_id = (?)", course_id).Find(&satisfaction).Error
 
 	return satisfaction, err
 }
 
 func (s sqliteSatisfactionRepository) GetStudentSatisfactionById(student_id uint64) (satisfaction models.StudentSatisfaction, err error) {
 	log.Println("{SQLITE Satisfaction REPOSITORY} GetStudentSatisfactionById")
-
-	err = s.Db.First(&satisfaction, satisfaction.StudentId).Error
+	satisfaction.StudentId = int64(student_id)
+	err = s.Db.First(&satisfaction, satisfaction).Error
 
 	return satisfaction, err
 }

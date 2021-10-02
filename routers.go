@@ -83,6 +83,8 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 
 		satisfactions := v1.Group("satisfaction")
 		{
+			satisfactions.Use(convertToUInt("courseId"))
+			satisfactions.Use(convertToUInt("studentId"))
 			satisfactions.GET("/course/:courseId", satisfactionController.GetCourseSatisfaction)
 			satisfactions.POST("/", satisfactionController.AddSatisfaction)
 			satisfactions.GET("/student/:studentId", satisfactionController.GetStudentSatisfaction)
