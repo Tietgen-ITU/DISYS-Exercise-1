@@ -18,5 +18,5 @@ type Course struct {
 
 	Teacher uint64 `json:"teacher,omitempty"`
 
-	Students []User `json:"students,omitempty" gorm:"foreignKey:ID"`
+	Students []User `json:"students,omitempty" gorm:"many2many:course_students;"`
 }
