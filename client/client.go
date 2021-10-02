@@ -43,7 +43,7 @@ func main() {
 	case 3:
 		deleteCourse()
 	case 4:
-		addStudentsToCourse()
+		addStudentToCourse()
 	case 5:
 		removeStudentFromCourse()
 	}
@@ -117,8 +117,8 @@ func addCourse() {
 	var res map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&res)
 
-	if res["courseId"] == nil {
-		fmt.Println(res)
+	if resp.StatusCode != 200 || res["courseId"] == nil {
+		printResponse(resp.StatusCode, res)
 	} else {
 		fmt.Print("Created course with id: ")
 		fmt.Println(res["courseId"])
@@ -143,19 +143,62 @@ func deleteCourse() {
 	if err != nil {
 		handleError(err)
 	}
+
 	var res map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&res)
 
 	if resp.StatusCode != 200 {
-		fmt.Println(resp.StatusCode)
-		fmt.Println(res)
+		printResponse(resp.StatusCode, res)
 	} else {
 		fmt.Println(res["msg"])
 	}
 }
 
-func addStudentsToCourse() {
+func addStudentToCourse() {
+	var course int
+	var student uint64
 
+	fmt.Print("Provide a course to add a student to: ")
+	_, err := fmt.Scanf("%d\n", &course)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Print("Provide a student to add: ")
+	_, err = fmt.Scanf("%d\n", &student)
+	if err != nil {
+		handleError(err)
+	}
+
+	user := models.User{ID: student}
+	data, err := json.Marshal(user)
+	if err != nil {
+		handleError(err)
+	}
+
+	req, err := http.NewRequest(
+		"PUT",
+		getHost()+strconv.Itoa(course)+"/addStudent",
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		handleError(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		handleError(err)
+	}
+
+	var res map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&res)
+
+	if resp.StatusCode != 200 {
+		printResponse(resp.StatusCode, res)
+	} else {
+		fmt.Println(res["msg"])
+	}
 }
 
 func removeStudentFromCourse() {}
@@ -165,4 +208,12 @@ func handleError(err error) {
 	fmt.Println(err)
 
 	os.Exit(1)
+}
+
+func printResponse(statusCode int, res map[string]interface{}) {
+	fmt.Print("Statuscode: ")
+	fmt.Println(statusCode)
+
+	fmt.Print("Response: ")
+	fmt.Println(res)
 }
