@@ -25,3 +25,12 @@ jobs:
     - name: Build client
       working-directory: ./monolith
       run: go build -v -o ./out/client ./client/client.go
+
+
+    - name: Build proto client
+      working-directory: ./proto
+      run: go build -v -o ./out/client ./client/main.go 
+
+      - name: Build proto server
+      working-directory: ./proto
+      run: go build -v -o ./out/server ./server/main.go 
