@@ -10,13 +10,13 @@
 package models
 
 type Course struct {
-	Id int64 `json:"id,omitempty"`
+	Id uint64 `json:"id,omitempty" gorm:"primaryKey;autoIncrement"`
 
 	Name string `json:"name,omitempty"`
 
 	Description string `json:"description,omitempty"`
 
-	Teacher int64 `json:"teacher,omitempty"`
+	Teacher uint64 `json:"teacher,omitempty"`
 
-	Students []int64 `json:"students,omitempty"`
+	Students []User `json:"students,omitempty" gorm:"many2many:course_students;"`
 }

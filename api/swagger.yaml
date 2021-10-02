@@ -1,8 +1,9 @@
+---
 swagger: "2.0"
 info:
-  title: "Mandatory exercise 1"
   description: "Mandatory exercse 1"
   version: "1.0.0"
+  title: "Mandatory exercise 1"
 host: "itu.swagger.dk"
 basePath: "/v1"
 schemes:
@@ -14,6 +15,7 @@ paths:
       tags:
       - "user"
       summary: "Get list of users"
+      parameters: []
       responses:
         "200":
           description: "Success"
@@ -35,6 +37,7 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/User"
+        x-exportParamName: "Body"
       responses:
         "200":
           description: "User created"
@@ -56,12 +59,14 @@ paths:
         description: "user that need to be updated"
         required: true
         type: "string"
+        x-exportParamName: "Id"
       - in: "body"
         name: "body"
         description: "Updated user object"
         required: true
         schema:
           $ref: "#/definitions/User"
+        x-exportParamName: "Body"
       responses:
         "400":
           description: "Invalid user supplied"
@@ -82,12 +87,12 @@ paths:
         description: "user that need to be deleted"
         required: true
         type: "string"
+        x-exportParamName: "Id"
       responses:
         "400":
           description: "Invalid user supplied"
         "404":
           description: "User not found"
-  
   /workload:
     post:
       tags:
@@ -96,8 +101,10 @@ paths:
       parameters:
       - in: "body"
         name: "body"
+        required: false
         schema:
           $ref: "#/definitions/Workload"
+        x-exportParamName: "Body"
       responses:
         "200":
           description: "Success"
@@ -107,16 +114,18 @@ paths:
       - "workload"
       summary: "Create workload"
       parameters:
-      - in: "path"
-        name: "course"
+      - name: "course"
+        in: "path"
         description: "Id of the course the workload is associated with"
         required: true
         type: "integer"
-      - in: "path"
-        name: "student"
+        x-exportParamName: "Course"
+      - name: "student"
+        in: "path"
         description: "Id of the student the workload is associated with"
         required: true
         type: "integer"
+        x-exportParamName: "Student"
       responses:
         "200":
           description: "Success"
@@ -130,23 +139,25 @@ paths:
       parameters:
       - in: "body"
         name: "body"
+        required: false
         schema:
           $ref: "#/definitions/StudentSatisfaction"
+        x-exportParamName: "Body"
       responses:
         "200":
           description: "Success"
-          
   /satisfaction/course/{course}:
     get:
       tags:
       - "satisfaction"
       summary: "Get satisfaction for a course"
       parameters:
-      - in: "path"
-        name: "course"
+      - name: "course"
+        in: "path"
         description: "Id of the course the satisfaction is associated with"
         required: true
         type: "integer"
+        x-exportParamName: "Course"
       responses:
         "200":
           description: "Success"
@@ -159,11 +170,12 @@ paths:
       - "satisfaction"
       summary: "Get satisfaction for a student"
       parameters:
-      - in: "path"
-        name: "student"
+      - name: "student"
+        in: "path"
         description: "Id of the student the satisfaction is associated with"
         required: true
         type: "integer"
+        x-exportParamName: "Student"
       responses:
         "200":
           description: "Success"
@@ -180,6 +192,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters: []
       responses:
         "200":
           description: "A list of all cources"
@@ -202,6 +215,7 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Course"
+        x-exportParamName: "Body"
       responses:
         "200":
           description: "OK"
@@ -209,12 +223,13 @@ paths:
             type: "integer"
             format: "int64"
             description: "Returns Id of created course"
-  /Course/{courseId}/addStudent:  
+  /course/{courseId}/addStudent:
     put:
       tags:
       - "Course"
       summary: "Add students to a specific course"
-      description: "Adds students to the course. If the student is already added then it wont be added as a duplicate."
+      description: "Adds students to the course. If the student is already added then\
+        \ it wont be added as a duplicate."
       operationId: "addStudentsToCourse"
       consumes:
       - "application/json"
@@ -227,6 +242,7 @@ paths:
         required: true
         type: "integer"
         format: "int64"
+        x-exportParamName: "CourseId"
       - in: "body"
         name: "body"
         description: "Identifiers of students to be added to the course"
@@ -237,10 +253,11 @@ paths:
             studentId:
               type: "integer"
               format: "int64"
+        x-exportParamName: "Body"
       responses:
         "200":
           description: "The student is added to the course"
-  /Course/{courseId}/student/{studentId}:
+  /course/{courseId}/student/{studentId}:
     delete:
       tags:
       - "Course"
@@ -257,15 +274,17 @@ paths:
         required: true
         type: "integer"
         format: "int64"
+        x-exportParamName: "CourseId"
       - name: "studentId"
         in: "path"
         required: true
         type: "integer"
         format: "int64"
+        x-exportParamName: "StudentId"
       responses:
         "200":
           description: "Course deleted"
-  /Course/{courseId}:
+  /course/{courseId}:
     delete:
       tags:
       - "Course"
@@ -282,6 +301,7 @@ paths:
         required: true
         type: "integer"
         format: "int64"
+        x-exportParamName: "CourseId"
       responses:
         "200":
           description: "Course deleted"
@@ -289,8 +309,8 @@ definitions:
   User:
     type: "object"
     required:
-    - "name"
     - "mail"
+    - "name"
     - "role"
     properties:
       id:
@@ -307,9 +327,15 @@ definitions:
         format: "int64"
       role:
         type: "string"
-        enum: 
+        enum:
         - "teacher"
         - "student"
+    example:
+      role: "teacher"
+      mail: "karl@itu.dk"
+      popularity: 6
+      name: "Karl"
+      id: 0
   Workload:
     properties:
       course_id:
@@ -369,14 +395,22 @@ definitions:
         items:
           type: "integer"
           format: "int64"
-  ArrayOfCourses: 
+    example:
+      teacher: 6
+      name: "name"
+      description: "description"
+      students:
+      - 1
+      - 1
+      id: 0
+  ArrayOfCourses:
     type: "array"
     items:
       $ref: "#/definitions/Course"
   ArrayOfIds:
-    type: "array"
-    items: 
-      type: "integer"
-      format: "int64"
     xml:
       name: "Course"
+    type: "array"
+    items:
+      type: "integer"
+      format: "int64"

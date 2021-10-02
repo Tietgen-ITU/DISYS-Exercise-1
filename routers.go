@@ -9,12 +9,13 @@
 package main
 
 import (
+	"log"
+	"strconv"
+
 	"github.com/ArneProductions/DISYS-exercise-1/endpoints"
 	"github.com/ArneProductions/DISYS-exercise-1/repository"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
-	"strconv"
 )
 
 func SetupRouter(db *gorm.DB) {
@@ -47,13 +48,16 @@ func convertToUInt(name string) gin.HandlerFunc {
 }
 
 func setupRoutes(router *gin.Engine, db *gorm.DB) {
+	// Define repositories
 	userRepository := repository.NewSqliteUserRepository(db)
 	satisfactionRepository := repository.NewSqliteSatisfactionRepository(db)
+	courseRepository := repository.NewSqliteCourseRepository(db)
 
+	// Create controllers
 	userController := endpoints.NewUserController(userRepository)
 
-	courseController := endpoints.NewCourseController()
 	satisfactionController := endpoints.NewSatisfactionController(satisfactionRepository)
+	courseController := endpoints.NewCourseController(courseRepository)
 	workloadController := endpoints.NewWorkloadController()
 
 	v1 := router.Group("/v1")
@@ -72,13 +76,23 @@ func setupRoutes(router *gin.Engine, db *gorm.DB) {
 			}
 		}
 
-		courses := v1.Group("courses")
+		courses := v1.Group("course")
 		{
 			courses.POST("/", courseController.AddCourse)
-			courses.PUT("/:courseId/addStudent", courseController.AddStudentsToCourse)
-			courses.DELETE("/:courseId", courseController.DeleteCourse)
 			courses.GET("/", courseController.GetCourses)
-			courses.POST("/:courseId/student/:studentId", courseController.RemoveStudentFromCourse)
+
+			coursesWithId := courses.Group(":courseId")
+			{
+				coursesWithId.Use(convertToUInt("courseId"))
+				coursesWithId.PUT("/addStudent", courseController.AddStudentsToCourse)
+				coursesWithId.DELETE("/", courseController.DeleteCourse)
+
+				coursesWithIdAndStudentId := coursesWithId.Group("student/:studentId")
+				{
+					coursesWithIdAndStudentId.Use(convertToUInt("studentId"))
+					coursesWithIdAndStudentId.DELETE("/", courseController.RemoveStudentFromCourse)
+				}
+			}
 		}
 
 		satisfactions := v1.Group("satisfaction")
