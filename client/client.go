@@ -5,15 +5,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/ArneProductions/DISYS-exercise-1/models"
 )
 
 func getHost() string {
-	return "http://localhost:8080/v1"
+	return "http://localhost:8080/v1/course/"
 }
 
 func printMenu() {
@@ -48,7 +50,29 @@ func main() {
 }
 
 func getCourses() {
+	req, err := http.NewRequest("GET", getHost(), nil)
 
+	if err != nil {
+		handleError(err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		handleError(err)
+	}
+
+	var response []models.Course
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		handleError(err)
+	}
+
+	json.Unmarshal(bodyBytes, &response)
+
+	fmt.Println(response)
 }
 
 func addCourse() {
@@ -81,14 +105,13 @@ func addCourse() {
 	}
 
 	resp, err := http.Post(
-		getHost()+"/courses",
+		getHost(),
 		"application/json",
 		bytes.NewBuffer(data),
 	)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		handleError(err)
 	}
 
 	var res map[string]interface{}
@@ -102,9 +125,38 @@ func addCourse() {
 	}
 }
 
-func deleteCourse() {}
+func deleteCourse() {
+	var course int
+	fmt.Print("Provide a course to delete: ")
+	_, err := fmt.Scanf("%d\n", &course)
 
-func addStudentsToCourse() {}
+	if err != nil {
+		handleError(err)
+	}
+
+	req, err := http.NewRequest("DELETE", getHost()+strconv.Itoa(course), nil)
+	if err != nil {
+		handleError(err)
+	}
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		handleError(err)
+	}
+	var res map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&res)
+
+	if resp.StatusCode != 200 {
+		fmt.Println(resp.StatusCode)
+		fmt.Println(res)
+	} else {
+		fmt.Println(res["msg"])
+	}
+}
+
+func addStudentsToCourse() {
+
+}
 
 func removeStudentFromCourse() {}
 
