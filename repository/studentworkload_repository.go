@@ -8,6 +8,7 @@ import (
 
 type StudentWorkloadRepository interface {
 	Create(models.StudentWorkload) (models.StudentWorkload, error)
+	GetByIds(uint64, uint64) (models.StudentWorkload, error)
 	Migrate() error
 }
 
@@ -35,6 +36,14 @@ func (s sqliteStudentWorkloadRepository) Create(studentworkload models.StudentWo
 	err := s.Db.Create(&studentworkload).Error
 
 	return studentworkload, err
+}
+
+func (s sqliteStudentWorkloadRepository) GetByIds(studentId uint64, workladId uint64) (workload models.StudentWorkload, err error) {
+	log.Println("{SQLITE WORKLOAD REPOSITORY} GetByIds")
+
+	err = s.Db.First(&workload, studentId, workladId).Error
+
+	return workload, err
 }
 
 

@@ -33,9 +33,27 @@ func NewWorkloadController(workloadRepository repository.WorkloadRepository, stu
 }
 
 func (w workloadController) GetStudentWorkloadFromCourse(ctx *gin.Context) {
+	log.Println("{WORKLOAD CONTROLLER} GetUser")
+
+	// Relies on the middleware
+	courseId := ctx.MustGet("courseId_int").(uint64)
+	userId := ctx.MustGet("studentId_int").(uint64)
 
 
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Ok"})
+	workload, err := w.studentWorkloadRepository.GetByIds(courseId, userId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":   "Failed retrieving user",
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "User retrieved",
+		"data": workload,
+	})
 }
 
 func (w workloadController) AddWorkload(ctx *gin.Context) {
